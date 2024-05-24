@@ -18,6 +18,7 @@ public class ExpenseDto {
 
     private String externalId;
 
+    @NonNull
     @JsonIgnoreProperties(value = "amount")
     private String amount;
 
