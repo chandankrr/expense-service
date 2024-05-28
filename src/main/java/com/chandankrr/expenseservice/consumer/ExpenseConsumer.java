@@ -22,6 +22,7 @@ public class ExpenseConsumer {
     public void listen(ExpenseDto eventData) {
         logger.info("Received event data: {}", eventData);
         try {
+            // TODO: Make it transactional to handle idempotency
             expenseService.createExpense(eventData);
         } catch (Exception e) {
             logger.error("ExpenseConsumer: An error occurred while consuming kafka event: ", e);
