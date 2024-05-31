@@ -5,7 +5,6 @@ import com.chandankrr.expenseservice.entity.Expense;
 import com.chandankrr.expenseservice.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,8 @@ import java.util.stream.Collectors;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
-    private final ModelMapper modelMapper;
-    private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
 
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
 
     public boolean createExpense(ExpenseDto expenseDto) {
         setCurrency(expenseDto);
