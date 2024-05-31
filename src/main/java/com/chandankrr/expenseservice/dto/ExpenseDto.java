@@ -2,13 +2,12 @@ package com.chandankrr.expenseservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @AllArgsConstructor
@@ -20,11 +19,12 @@ import java.sql.Timestamp;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExpenseDto {
 
+    @JsonIgnoreProperties(value = "external_id")
     private String externalId;
 
     @NonNull
     @JsonIgnoreProperties(value = "amount")
-    private String amount;
+    private BigDecimal amount;
 
     @JsonIgnoreProperties(value = "user_id")
     private String userId;
@@ -38,6 +38,9 @@ public class ExpenseDto {
     @JsonIgnoreProperties(value = "created_at")
     private Timestamp createdAt;
 
+    @JsonIgnoreProperties(value = "updated_at")
+    private Timestamp updatedAt;
+
     public ExpenseDto(String json) {
         try{
             ObjectMapper mapper = new ObjectMapper();
@@ -49,6 +52,7 @@ public class ExpenseDto {
             this.merchant = expense.getMerchant();
             this.currency = expense.getCurrency();
             this.createdAt = expense.getCreatedAt();
+            this.updatedAt = expense.getUpdatedAt();
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize ExpenseDto from json", e);
         }

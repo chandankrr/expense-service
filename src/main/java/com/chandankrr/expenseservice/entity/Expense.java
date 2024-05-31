@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class Expense {
 
     private String userId;
 
-    private String amount;
+    private BigDecimal amount;
 
     private String merchant;
 
@@ -35,12 +36,19 @@ public class Expense {
 
     private Timestamp createdAt;
 
+    private Timestamp updatedAt;
+
     @PrePersist
-    @PreUpdate
-    private void generateExternalId() {
-        if(externalId == null) {
+    private void onCreate() {
+        if (externalId == null) {
             externalId = UUID.randomUUID().toString();
         }
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
 }
