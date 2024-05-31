@@ -6,6 +6,8 @@ import com.chandankrr.expenseservice.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +21,17 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final ModelMapper modelMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
+
 
     public boolean createExpense(ExpenseDto expenseDto) {
         setCurrency(expenseDto);
         try {
-            expenseRepository.save(modelMapper.map(expenseDto, Expense.class));
+            expenseRepository.save(dtoToExpense(expenseDto));
+            logger.info("Expense created");
             return true;
         } catch (Exception e) {
+            logger.info("Error creating expense");
             return false;
         }
     }
@@ -50,13 +56,38 @@ public class ExpenseService {
     public List<ExpenseDto> getExpenses(String userId) {
         List<Expense> expenseList = expenseRepository.findByUserId(userId);
         return expenseList.stream()
-                .map(expense -> modelMapper.map(expense, ExpenseDto.class))
+                .map(this::expenseToDto)
                 .collect(Collectors.toList());
     }
 
     private void setCurrency(ExpenseDto expenseDto) {
-        if(Objects.isNull(expenseDto.getCurrency())) {
+        if (Objects.isNull(expenseDto.getCurrency())) {
             expenseDto.setCurrency("INR");
         }
     }
+
+    private Expense dtoToExpense(ExpenseDto expenseDto) {
+        return Expense.builder()
+                .userId(expenseDto.getUserId())
+                .externalId(expenseDto.getExternalId())
+                .amount(expenseDto.getAmount())
+                .merchant(expenseDto.getMerchant())
+                .currency(expenseDto.getCurrency())
+                .createdAt(expenseDto.getCreatedAt())
+                .updatedAt(expenseDto.getUpdatedAt())
+                .build();
+    }
+
+    private ExpenseDto expenseToDto(Expense expense) {
+        return ExpenseDto.builder()
+                .externalId(expense.getExternalId())
+                .userId(expense.getUserId())
+                .amount(expense.getAmount())
+                .merchant(expense.getMerchant())
+                .currency(expense.getCurrency())
+                .createdAt(expense.getCreatedAt())
+                .updatedAt(expense.getUpdatedAt())
+                .build();
+    }
+
 }
