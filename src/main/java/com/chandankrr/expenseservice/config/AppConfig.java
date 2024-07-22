@@ -1,4 +1,4 @@
-package com.chandankrr.expenseservice.configuration;
+package com.chandankrr.expenseservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

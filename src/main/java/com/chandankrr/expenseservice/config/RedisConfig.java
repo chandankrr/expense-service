@@ -1,4 +1,4 @@
-package com.chandankrr.expenseservice.configuration;
+package com.chandankrr.expenseservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
