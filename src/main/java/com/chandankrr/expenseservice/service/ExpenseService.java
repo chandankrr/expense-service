@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,9 +21,9 @@ import java.util.stream.Collectors;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
-
     private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
 
+    @CacheEvict(value = "expenses", key = "#expenseDto.userId")
     public boolean createExpense(ExpenseDto expenseDto) {
         setCurrency(expenseDto);
         try {
@@ -34,6 +36,15 @@ public class ExpenseService {
         }
     }
 
+    @Cacheable(value = "expenses", key = "#userId")
+    public List<ExpenseDto> getExpenses(String userId) {
+        List<Expense> expenseList = expenseRepository.findByUserId(userId);
+        return expenseList.stream()
+                .map(this::expenseToDto)
+                .collect(Collectors.toList());
+    }
+
+    @CacheEvict(value = "expenses", key = "#expenseDto.userId")
     public boolean updateExpense(ExpenseDto expenseDto) {
         Optional<Expense> expenseFoundOpt = expenseRepository.findByUserIdAndExternalId(expenseDto.getUserId(),
                 expenseDto.getExternalId());
@@ -49,13 +60,6 @@ public class ExpenseService {
 
         expenseRepository.save(expense);
         return true;
-    }
-
-    public List<ExpenseDto> getExpenses(String userId) {
-        List<Expense> expenseList = expenseRepository.findByUserId(userId);
-        return expenseList.stream()
-                .map(this::expenseToDto)
-                .collect(Collectors.toList());
     }
 
     private void setCurrency(ExpenseDto expenseDto) {
